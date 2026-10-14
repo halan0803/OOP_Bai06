@@ -56,8 +56,13 @@ namespace DeviceManagement
 
         // Ghi đè phương thức biểu diễn thông tin của thiết bị dưới dạng chuỗi
         public override string ToString()
-            {
-                return $"[{DeviceId}] {DeviceName} | Năm SD: {YearOfUse} | Giá mua: {PurchasePrice:N0} đ | Trạng thái: {Status} | Phí bảo trì: {CalculateMaintenanceCost():N0} đ";
-            }
+        {
+            return $"[{DeviceId}] {DeviceName} | Năm SD: {YearOfUse} | Giá mua: {PurchasePrice:N0} đ | Trạng thái: {Status} | Phí bảo trì: {CalculateMaintenanceCost():N0} đ";
+        }
+        
+        // Số ngày mượn tối đa
+        public void MarkAsBorrowed() => Status = DeviceStatus.Borrowed;
+        // Cập nhật trạng thái thiết bị về lại Available sau khi ghi nhận ngày trả
+        public void MarkAsAvailable() => Status = DeviceStatus.Available;
     }
 }
