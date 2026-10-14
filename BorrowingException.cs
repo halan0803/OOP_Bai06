@@ -10,6 +10,7 @@ namespace DeviceManagement
     public class BorrowingException : Exception
     {
         public BorrowingException(string message) : base(message) { }
+        public BorrowingException( string message, Exception innerException) : base(message, innerException) { }
     }
 
     // Các ngoại lệ dẫn xuất bắt buộc
@@ -40,10 +41,19 @@ namespace DeviceManagement
     }
 
     // Phát sinh khi số ngày mượn không dương
-    public class InvalidBorrowPeriodException : BorrowingException 
+    public class InvalidBorrowPeriodException : BorrowingException
     {
-        public InvalidBorrowPeriodException(string deviceId, int requestDays, int maxDays)
-            : base($"Thiết bị {deviceId} chỉ được mượn tối đa {maxDays} ngày, yêu cầu mượn {requestDays} ngày là không hợp lệ.") { }
+        public string DeviceId { get; }
+        public int RequestedDays { get; }
+        public int MaxBorrowDays { get; }
+
+        public InvalidBorrowPeriodException(string deviceId, int requestedDays, int maxBorrowDays)
+            : base($"Thiết bị {deviceId} chỉ được mượn tối đa {maxBorrowDays} ngày, nhưng yêu cầu mượn {requestedDays} ngày.")
+        {
+            DeviceId = deviceId;
+            RequestedDays = requestedDays;
+            MaxBorrowDays = maxBorrowDays;
+        }
     }
 
     // Phát sinh khi cùng một thiết bị đã tồn tại trong phiếu
