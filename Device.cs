@@ -37,8 +37,9 @@ namespace DeviceManagement
                 : throw new ArgumentException("Giá mua phải lớn hơn 0.");
         }
         public DeviceStatus Status { get; set; }
+        public int MaxBorrowDays { get; }
 
-        public Device(string deviceId, string deviceName, int yearOfUse, decimal purchasePrice, DeviceStatus status = DeviceStatus.Available)
+        public Device(string deviceId, string deviceName, int yearOfUse, decimal purchasePrice, int maxBorrowDays = 3, DeviceStatus status = DeviceStatus.Available)
         {
             // Mã thiết bị không được rỗng
             if (string.IsNullOrWhiteSpace(deviceId))
@@ -49,15 +50,16 @@ namespace DeviceManagement
             YearOfUse = yearOfUse;
             PurchasePrice = purchasePrice;
             Status = status;
+            MaxBorrowDays = maxBorrowDays > 0 ? maxBorrowDays : throw new ArgumentException("Số ngày mượn tối đa phải lớn hơn 0.");
         }
     
         // Phương thức trừu tượng tính chi phí bảo trì dư kiến trong 1 năm
-        public abstract decimal CalculateMaintenanceCost();
+        public abstract decimal CalculateAnnualMaintenanceCost();
 
         // Ghi đè phương thức biểu diễn thông tin của thiết bị dưới dạng chuỗi
         public override string ToString()
         {
-            return $"[{DeviceId}] {DeviceName} | Năm SD: {YearOfUse} | Giá mua: {PurchasePrice:N0} đ | Trạng thái: {Status} | Phí bảo trì: {CalculateMaintenanceCost():N0} đ";
+            return $"[{DeviceId}] {DeviceName} | Năm SD: {YearOfUse} | Giá mua: {PurchasePrice:N0} đ | Trạng thái: {Status} | Phí bảo trì: {CalculateAnnualMaintenanceCost():N0} đ";
         }
         
         // Số ngày mượn tối đa

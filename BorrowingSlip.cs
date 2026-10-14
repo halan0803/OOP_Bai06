@@ -32,7 +32,7 @@ namespace DeviceManagement
         public void AddDevice(Device device, int borrowDays)
         {
             if (device == null) throw new ArgumentNullException(nameof(device));
-            if (borrowDays <= 0) throw new ArgumentException("Số ngày mượn không dương.");
+            if (borrowDays <= 0) throw new InvalidBorrowPeriodException(device.DeviceId, borrowDays, device.MaxBorrowDays);
             if (borrowDays > device.MaxBorrowDays) throw new InvalidBorrowPeriodException(device.DeviceId, borrowDays, device.MaxBorrowDays);
             if (_items.Any(i => i.Device.DeviceId == device.DeviceId)) throw new DuplicateDeviceException($"Thiết bị {device.DeviceId} đã có trong phiếu.");
             if (_items.Count >= Borrower.GetMaximumDevices()) throw new BorrowLimitExceededException(Borrower.BorrowerId, Borrower.GetMaximumDevices());
