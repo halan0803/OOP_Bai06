@@ -9,8 +9,8 @@ namespace DeviceManagement
     // WirelessMic kế thừa từ Device
     public class WirelessMic : Device
     {
-        public WirelessMic(string deviceId, string deviceName, int yearOfUse, decimal purchasePrice, int maxBorrowDays = 1) 
-            : base(deviceId, deviceName, yearOfUse, purchasePrice, maxBorrowDays) { }
+        public WirelessMic(string deviceId, string deviceName, int yearOfUse, decimal purchasePrice, int maxBorrowDays = 1, DeviceStatus status = DeviceStatus.Available) 
+            : base(deviceId, deviceName, yearOfUse, purchasePrice, maxBorrowDays, status) { }
 
         // Chi phí bảo trì hằng năm bằng 15% giá mua
         public override decimal CalculateAnnualMaintenanceCost() => PurchasePrice * 0.15m;

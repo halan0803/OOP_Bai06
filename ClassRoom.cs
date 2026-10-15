@@ -47,7 +47,7 @@ namespace DeviceManagement
         }
 
         private readonly List<Device> _devices = new();
-        public IReadOnlyList<Device> Devices => _devices;
+        public IReadOnlyList<Device> Devices => _devices.AsReadOnly();
 
         public ClassRoom(string roomId, string roomName, int capacity)
         {
@@ -81,7 +81,7 @@ namespace DeviceManagement
         public Device? FindDevice(string deviceId)
         {
             if (string.IsNullOrWhiteSpace(deviceId)) return null;
-            return _devices.FirstOrDefault(d => d.DeviceId.Equals(deviceId.Trim(), StringComparison.OrdinalIgnoreCase));
+            return _devices.FirstOrDefault(d => string.Equals(d.DeviceId.Trim(), deviceId.Trim(), StringComparison.OrdinalIgnoreCase));
         }
 
         // Tính tổng chi phí bảo trì bằng tính đa hình

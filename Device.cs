@@ -36,7 +36,7 @@ namespace DeviceManagement
             set => _purchasePrice = value > 0 ? value
                 : throw new ArgumentException("Giá mua phải lớn hơn 0.");
         }
-        public DeviceStatus Status { get; set; }
+        public DeviceStatus Status { get; private set; }
         public int MaxBorrowDays { get; }
 
         public Device(string deviceId, string deviceName, int yearOfUse, decimal purchasePrice, int maxBorrowDays = 3, DeviceStatus status = DeviceStatus.Available)
@@ -62,9 +62,40 @@ namespace DeviceManagement
             return $"[{DeviceId}] {DeviceName} | Năm SD: {YearOfUse} | Giá mua: {PurchasePrice:N0} đ | Trạng thái: {Status} | Phí bảo trì: {CalculateAnnualMaintenanceCost():N0} đ";
         }
         
-        // Số ngày mượn tối đa
-        public void MarkAsBorrowed() => Status = DeviceStatus.Borrowed;
-        // Cập nhật trạng thái thiết bị về lại Available sau khi ghi nhận ngày trả
-        public void MarkAsAvailable() => Status = DeviceStatus.Available;
+        // Chỉ chuyển Available -> Borrowed
+        internal void MarkAsBorrowed()
+        {
+            if (Status != DeviceStatus.Available)
+                throw new InvalidOperationException(
+                    $"Thiết bị {DeviceId} đang {Status}, không thể chuyển sang Borrowed.");
+            Status = DeviceStatus.Borrowed;
+        }
+
+        // Chỉ chuyển Borrowed -> Available
+        internal void MarkAsAvailable()
+        {
+            if (Status != DeviceStatus.Borrowed)
+                throw new InvalidOperationException(
+                    $"Thiết bị {DeviceId} đang {Status}, không thể chuyển về Available.");
+            Status = DeviceStatus.Available;
+        }
+
+        // Phương thức mới: đưa thiết bị vào bảo trì
+        public void SendToMaintenance()
+        {
+            if (Status == DeviceStatus.Borrowed)
+                throw new InvalidOperationException(
+                    $"Thiết bị {DeviceId} đang được mượn, phải trả trước khi bảo trì.");
+            Status = DeviceStatus.UnderMaintenance;
+        }
+
+        // Phương thức mới: hoàn tất bảo trì
+        public void CompleteMaintenance()
+        {
+            if (Status != DeviceStatus.UnderMaintenance)
+                throw new InvalidOperationException(
+                    $"Thiết bị {DeviceId} không ở trạng thái bảo trì.");
+            Status = DeviceStatus.Available;
+        }
     }
 }

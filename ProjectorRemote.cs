@@ -9,8 +9,8 @@ namespace DeviceManagement
     // ProjectorRemote kế thừa từ Device
     public class ProjectorRemote : Device
     {
-        public ProjectorRemote(string deviceId, string deviceName, int yearOfUse, decimal purchasePrice, int maxBorrowDays = 3) 
-            : base(deviceId, deviceName, yearOfUse, purchasePrice, maxBorrowDays) { }
+        public ProjectorRemote(string deviceId, string deviceName, int yearOfUse, decimal purchasePrice, int maxBorrowDays = 3, DeviceStatus status = DeviceStatus.Available) 
+            : base(deviceId, deviceName, yearOfUse, purchasePrice, maxBorrowDays, status) { }
 
         // Chi phí bảo trì hằng năm bằng 10% giá mua
         public override decimal CalculateAnnualMaintenanceCost() => PurchasePrice * 0.1m;

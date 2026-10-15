@@ -34,7 +34,7 @@ namespace DeviceManagement
             if (device == null) throw new ArgumentNullException(nameof(device));
             if (borrowDays <= 0) throw new InvalidBorrowPeriodException(device.DeviceId, borrowDays, device.MaxBorrowDays);
             if (borrowDays > device.MaxBorrowDays) throw new InvalidBorrowPeriodException(device.DeviceId, borrowDays, device.MaxBorrowDays);
-            if (_items.Any(i => i.Device.DeviceId == device.DeviceId)) throw new DuplicateDeviceException($"Thiết bị {device.DeviceId} đã có trong phiếu.");
+            if (_items.Any(i => string.Equals(i.Device.DeviceId.Trim(), device.DeviceId.Trim(), StringComparison.OrdinalIgnoreCase))) throw new DuplicateDeviceException($"Thiết bị {device.DeviceId} đã có trong phiếu.");
             if (_items.Count >= Borrower.GetMaximumDevices()) throw new BorrowLimitExceededException(Borrower.BorrowerId, Borrower.GetMaximumDevices());
             if (device.Status != DeviceStatus.Available) throw new DeviceUnavailableException(device.DeviceId, device.Status);
 
@@ -46,7 +46,11 @@ namespace DeviceManagement
 
         public decimal ReturnDevice(string deviceId, DateTime returnedDate)
         {
-            var item = _items.FirstOrDefault(i => i.Device.DeviceId == deviceId);
+            if (string.IsNullOrWhiteSpace(deviceId))
+                throw new ArgumentException("Mã thiết bị không được để trống.", nameof(deviceId));
+            
+            var item = _items.FirstOrDefault(i => string.Equals(i.Device.DeviceId.Trim(), deviceId.Trim(), StringComparison.OrdinalIgnoreCase));
+
             if (item == null) 
                 throw new DeviceNotInSlipException($"Thiết bị {deviceId} không thuộc phiếu mượn này.");
             
@@ -57,6 +61,9 @@ namespace DeviceManagement
             decimal lateFee = 0;
             if (returnedDate > item.DueDate)
             {
+                // Quy ước: Chỉ tính số ngày muộn trọn vẹn,
+                // phần thời gian lẻ dưới 24 giờ không tính thêm một ngày
+                // Ví dụ: trả muộn 1 ngày 20 giờ thì chỉ tính 1 ngày
                 int lateDays = (returnedDate - item.DueDate).Days;
                 lateFee = lateDays * 50000m;
             }
